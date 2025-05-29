@@ -100,7 +100,6 @@ export function ChartTooltip(props: TooltipProps<number, string>) {
     payload: item.payload ?? {},
   }))
 
-  // Adapter to transform Recharts formatter to match expected custom formatter signature
   const adaptedFormatter =
     formatter &&
     ((value: number, name: string, entry: unknown) =>
@@ -141,8 +140,6 @@ const ChartLegendContent = React.forwardRef<
       )}
     >
       {payload.map((item) => {
-        const key = nameKey || item.dataKey || "value"
-
         return (
           <div
             key={item.value}
@@ -162,28 +159,5 @@ const ChartLegendContent = React.forwardRef<
   )
 })
 ChartLegendContent.displayName = "ChartLegend"
-
-function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
-  if (typeof payload !== "object" || payload === null) return undefined
-
-  const payloadPayload =
-    "payload" in payload && typeof payload.payload === "object" && payload.payload !== null
-      ? payload.payload
-      : undefined
-
-  let configLabelKey: string = key
-
-  if (key in payload && typeof payload[key as keyof typeof payload] === "string") {
-    configLabelKey = payload[key as keyof typeof payload] as string
-  } else if (
-    payloadPayload &&
-    key in payloadPayload &&
-    typeof payloadPayload[key as keyof typeof payloadPayload] === "string"
-  ) {
-    configLabelKey = payloadPayload[key as keyof typeof payloadPayload] as string
-  }
-
-  return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config]
-}
 
 export { ChartLegend, ChartLegendContent }
