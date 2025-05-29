@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { TooltipProps, TooltipPayload, LegendProps } from "recharts"
+import type { TooltipProps, LegendProps } from "recharts"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
@@ -103,7 +103,7 @@ export function ChartTooltip(props: TooltipProps<number, string>) {
   const adaptedFormatter =
     formatter &&
     ((value: number, name: string, entry: unknown) =>
-      formatter(value, name, entry as TooltipPayload<number, string>, 0, payload || []))
+      formatter(value, name, entry, 0, payload || []))
 
   return (
     <ChartTooltipContent
