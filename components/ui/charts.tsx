@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import type { TooltipProps } from "recharts"
-// import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
@@ -19,7 +18,6 @@ interface ChartContainerProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function ChartContainer({ config, className, children, ...props }: ChartContainerProps) {
-  // Create CSS variables for chart colors
   const style = React.useMemo(() => {
     return Object.entries(config).reduce(
       (acc, [key, value]) => {
@@ -46,9 +44,9 @@ interface ChartTooltipContentProps {
     payload: {
       [key: string]: unknown
     }
-  }>  
+  }>
   label?: string
-  formatter?: (value: number, name: string, props: unknown) => [string, string] 
+  formatter?: (value: number, name: string, props: unknown) => [string, string]
   labelFormatter?: (label: string, payload: unknown[]) => React.ReactNode
 }
 
@@ -85,7 +83,24 @@ export function ChartTooltipContent({ active, payload, label, formatter, labelFo
 }
 
 export function ChartTooltip(props: TooltipProps<number, string>) {
-  return <ChartTooltipContent {...props} />
+  const { active, payload, label, formatter, labelFormatter } = props
+
+  const transformedPayload = payload?.map((item) => ({
+    name: item.name ?? "",
+    value: item.value ?? 0,
+    color: item.color,
+    payload: item.payload ?? {},
+  }))
+
+  return (
+    <ChartTooltipContent
+      active={active}
+      payload={transformedPayload}
+      label={label}
+      formatter={formatter}
+      labelFormatter={labelFormatter}
+    />
+  )
 }
 
 const ChartLegend = RechartsPrimitive.Legend
@@ -98,10 +113,7 @@ const ChartLegendContent = React.forwardRef<
       nameKey?: string
     }
 >(({ className, hideIcon = false, payload, verticalAlign = "bottom", nameKey }, ref) => {
-  // TODO: Fix this
- // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _config = {}
-  // const { config } = useChart()
+  const _config = {}
 
   if (!payload?.length) {
     return null
@@ -113,9 +125,7 @@ const _config = {}
       className={cn("flex items-center justify-center gap-4", verticalAlign === "top" ? "pb-3" : "pt-3", className)}
     >
       {payload.map((item) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const _key = `${nameKey || item.dataKey || "value"}` 
-        // const itemConfig = getPayloadConfigFromPayload(config, item, key)
+        const _key = `${nameKey || item.dataKey || "value"}`
         const itemConfig = {
           icon: null,
           label: item.value,
@@ -145,10 +155,7 @@ const _config = {}
 })
 ChartLegendContent.displayName = "ChartLegend"
 
-// Helper to extract item config from a payload.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
-
   if (typeof payload !== "object" || payload === null) {
     return undefined
   }
