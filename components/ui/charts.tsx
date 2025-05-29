@@ -42,10 +42,11 @@ interface ChartTooltipContentProps {
   payload?: Array<{
     name: string
     value: number
+    color?: string
     payload: {
       [key: string]: unknown
-    }    
-  }>
+    }
+  }>  
   label?: string
   formatter?: (value: number, name: string, props: unknown) => [string, string] 
   labelFormatter?: (label: string, payload: unknown[]) => React.ReactNode
@@ -83,7 +84,7 @@ export function ChartTooltipContent({ active, payload, label, formatter, labelFo
   )
 }
 
-export function ChartTooltip(props: TooltipProps<ValueType, NameType>) {
+export function ChartTooltip(props: TooltipProps<number, string>) {
   return <ChartTooltipContent {...props} />
 }
 
