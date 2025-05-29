@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { TooltipProps } from "recharts"
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
+// import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
