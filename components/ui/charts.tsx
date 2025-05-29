@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { TooltipProps, LegendProps, Payload } from "recharts"
+import type { TooltipProps, LegendProps } from "recharts"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
@@ -35,19 +35,19 @@ export function ChartContainer({ config, className, children, ...props }: ChartC
   )
 }
 
+interface CustomPayload {
+  name: string
+  value: number
+  color?: string
+  payload: Record<string, unknown>
+}
+
 interface ChartTooltipContentProps {
   active?: boolean
-  payload?: Array<{
-    name: string
-    value: number
-    color?: string
-    payload: {
-      [key: string]: unknown
-    }
-  }>
+  payload?: CustomPayload[]
   label?: string
-  formatter?: (value: number, name: string, props: unknown) => React.ReactNode
-  labelFormatter?: (label: string, payload: unknown[]) => React.ReactNode
+  formatter?: (value: number, name: string, props: CustomPayload) => React.ReactNode
+  labelFormatter?: (label: string, payload: CustomPayload[]) => React.ReactNode
 }
 
 export function ChartTooltipContent({
@@ -74,7 +74,7 @@ export function ChartTooltipContent({
                 <div
                   className="h-2 w-2 rounded-full"
                   style={{
-                    backgroundColor: (entry.payload?.color as string) || `var(--color-${entry.name})`,
+                    backgroundColor: entry.color || `var(--color-${entry.name})`,
                   }}
                 />
                 <span className="text-sm text-muted-foreground">{entry.name}:</span>
@@ -93,18 +93,18 @@ export function ChartTooltipContent({
 export function ChartTooltip(props: TooltipProps<number, string>) {
   const { active, payload, label, formatter, labelFormatter } = props
 
-  const transformedPayload = payload?.map((item) => ({
-    name: item.name ?? "",
-    value: item.value ?? 0,
-    color: item.color,
-    payload: item.payload ?? {},
-  }))
+  const transformedPayload: CustomPayload[] =
+    payload?.map((item) => ({
+      name: item.name ?? "",
+      value: item.value ?? 0,
+      color: item.color,
+      payload: item.payload ?? {},
+    })) || []
 
-  // Fix: cast entry as expected Payload type from Recharts
   const adaptedFormatter =
     formatter &&
     ((value: number, name: string, entry: unknown) =>
-      formatter(value, name, entry as Payload<number, string>, 0, payload || []))
+      formatter(value, name, entry as CustomPayload))
 
   return (
     <ChartTooltipContent
@@ -143,7 +143,7 @@ const ChartLegendContent = React.forwardRef<
       {payload.map((item) => (
         <div
           key={item.value}
-          className={cn("flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground")}
+          className="flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
         >
           {!hideIcon ? (
             <div
