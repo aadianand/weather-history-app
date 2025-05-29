@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { TooltipProps, LegendProps } from "recharts"
+import type { TooltipProps, LegendProps, Payload } from "recharts"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
@@ -100,10 +100,11 @@ export function ChartTooltip(props: TooltipProps<number, string>) {
     payload: item.payload ?? {},
   }))
 
+  // Fix: cast entry as expected Payload type from Recharts
   const adaptedFormatter =
     formatter &&
     ((value: number, name: string, entry: unknown) =>
-      formatter(value, name, entry, 0, payload || []))
+      formatter(value, name, entry as Payload<number, string>, 0, payload || []))
 
   return (
     <ChartTooltipContent
@@ -139,22 +140,20 @@ const ChartLegendContent = React.forwardRef<
         className
       )}
     >
-      {payload.map((item) => {
-        return (
-          <div
-            key={item.value}
-            className={cn("flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground")}
-          >
-            {!hideIcon ? (
-              <div
-                className="h-2 w-2 shrink-0 rounded-[2px]"
-                style={{ backgroundColor: item.color }}
-              />
-            ) : null}
-            {item.value}
-          </div>
-        )
-      })}
+      {payload.map((item) => (
+        <div
+          key={item.value}
+          className={cn("flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground")}
+        >
+          {!hideIcon ? (
+            <div
+              className="h-2 w-2 shrink-0 rounded-[2px]"
+              style={{ backgroundColor: item.color }}
+            />
+          ) : null}
+          {item.value}
+        </div>
+      ))}
     </div>
   )
 })
