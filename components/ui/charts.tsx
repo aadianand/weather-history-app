@@ -67,7 +67,7 @@ export function ChartTooltipContent({ active, payload, label, formatter, labelFo
                 <div
                   className="h-2 w-2 rounded-full"
                   style={{
-                    backgroundColor: entry.color || `var(--color-${entry.name})`,
+                    backgroundColor: (entry.payload?.color as string) || `var(--color-${entry.name})`,
                   }}
                 />
                 <span className="text-sm text-muted-foreground">{entry.name}:</span>
